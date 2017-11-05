@@ -16,10 +16,19 @@
         var selDate;
         var selMonth;
         var selYear;
+        
+        var dayToMs = (24 * 60 * 60 * 1000);    //!< Day to millisecond convert
+        
+        //!< Stored data
+        var timeRecordsStr;
+        var timeRecordsObj;
 		
 		//!< Function called when page is loaded
         //!< 1. Get the current time
         //!< 2. Get the selected time
+        //!< 3. Set forward/back links
+        //!< 4. Set title
+        //!< 5. Get stored data + parse
 		function onLoad()
 		{
             // Get current time
@@ -45,8 +54,37 @@
             selMonth = selTime.getMonth();
             selYear = selTime.getFullYear();
             
+            // Set forward/back links
+            document.getElementById("backlink").href = "timesheet.html?t=" + (timeOffset - dayToMs);
+            document.getElementById("backbacklink").href = "timesheet.html?t=" + (timeOffset - 7*dayToMs);
+            document.getElementById("forwardlink").href = "timesheet.html?t=" + (timeOffset + dayToMs);
+            document.getElementById("forwardforwardlink").href = "timesheet.html?t=" + (timeOffset + 7*dayToMs);
+            
 			setTitle();
 			
+            // Get data
+            timeRecordsStr = localStorage.timeRecords;
+            if (timeRecordsStr == null)
+            {
+                //Make blank structure
+                timeRecordsObj = [{
+                                    "date": "19700101",
+                                    "jobs": [{
+                                        "jobno":"blank",
+                                        "time": 0.0
+                                    }]
+                            }];
+                // save back to string and out to localStorage
+                timeRecordsStr = JSON.stringify(timeRecordsObj);
+                localStorage.timeRecords = timeRecordsStr;
+            }
+            else
+            {
+                // parse existing data
+                timeRecordsObj = JSON.parse(timeRecordsStr);
+            }
+            
+            
 			var slider = document.getElementById("myRange");
 			var output = document.getElementById("demo");
 			output.innerHTML = slider.value;
@@ -96,7 +134,11 @@
 	<style>
 		#title {
 			font-size: 30px;
+            text-align: center;
 		}
+        #links {
+            text-align: center;
+        }
 		#slidecontainer {
 		    width: 100%; /* Width of the outside container */
 		}
@@ -135,12 +177,27 @@
 		    background: #4CAF50; /* Green background */
 		    cursor: pointer; /* Cursor on hover */
 		}
+        
 	</style>
 	
 </head>
 <body onload="onLoad()">
 
-	<div id="title">What are you doing?</div><br />
+	<div id="title">What are you doing?</div>
+    <div id="links">
+        <span>
+            <a id="backbacklink" href=""><<</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id="backlink" href=""><</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id = "nowlink" href="timesheet.html?t=0">-</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id = "forwardlink" href="">></a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id = "forwardforwardlink" href="">>></a>
+        </span>
+    </div>
+    <br /><br />
 	
 	<div id="slidecontainer">
 		<span id="jobno">UTP2:</span><input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="myRange"> <span id="demo"></span>
