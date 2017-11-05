@@ -160,14 +160,22 @@
         }
 		#slidecontainer {
 		    width: 100%; /* Width of the outside container */
+            height: 80px;
+            display: list-item;
 		}
+        
+        .jobno {
+            height: 20px;
+            line-height: 50px;
+            width: 100px;
+        }
 
 		/* The slider itself */
 		.slider {
 		    -webkit-appearance: none;  /* Override default CSS styles */
 		    appearance: none;
 		    width: 75%; /* Full-width */
-		    height: 25px; /* Specified height */
+		    height: 50px; /* Specified height */
 		    background: #d3d3d3; /* Grey background */
 		    outline: none; /* Remove outline */
 		    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
@@ -184,15 +192,15 @@
 		.slider::-webkit-slider-thumb {
 		    -webkit-appearance: none; /* Override default look */
 		    appearance: none;
-		    width: 25px; /* Set a specific slider handle width */
-		    height: 25px; /* Slider handle height */
+		    width: 50px; /* Set a specific slider handle width */
+		    height: 50px; /* Slider handle height */
 		    background: #4CAF50; /* Green background */
 		    cursor: pointer; /* Cursor on hover */
 		}
 
 		.slider::-moz-range-thumb {
-		    width: 25px; /* Set a specific slider handle width */
-		    height: 25px; /* Slider handle height */
+		    width: 50px; /* Set a specific slider handle width */
+		    height: 50px; /* Slider handle height */
 		    background: #4CAF50; /* Green background */
 		    cursor: pointer; /* Cursor on hover */
 		}
@@ -218,9 +226,16 @@
     </div>
     <br /><br />
 	
-	<div id="slidecontainer">
-		<span id="jobno">UTP2:</span><input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="myRange"> <span id="demo"></span>
-	</div>
+    <div id="jobs">
+        <div class="jobslider" id="slidecontainer">
+            <input class="jobno" type="text"><input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="myRange"> <span id="demo"></span>
+        </div>
+        
+        <div class="jobslider" id="slidecontainer">
+            <input class="jobno" type="text"><input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="myRange"> <span id="demo"></span>
+        </div>
+    </div>
+	
 
 </body>
 </html>
