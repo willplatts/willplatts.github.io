@@ -72,11 +72,41 @@
             {
                 //Make blank structure
                 timeRecordsObj = [{
-                                    "date": "1970-01-01",
-                                    "jobs": [{
-                                        "jobno":"blank",
+                                    "date": selTimeIso,
+                                    "jobs": [
+                                    {
+                                        "jobno":"",
                                         "time": 0.0
-                                    }]
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    }
+                                    ]
                             }];
                 // save back to string and out to localStorage
                 timeRecordsStr = JSON.stringify(timeRecordsObj);
@@ -90,14 +120,75 @@
             
             // Get jobs stored for selected day
             jobs = GetJobs(selTimeIso);
+            if (jobs == null)
+            {
+                timeRecordsObj.push({
+                                    "date": selTimeIso,
+                                    "jobs": [
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    }
+                                    ]
+                            }
+                            );
+                jobs = GetJobs(selTimeIso);
+            }
             
-			var slider = document.getElementById("myRange");
-			var output = document.getElementById("demo");
-			output.innerHTML = slider.value;
+            // Write stored to controls
+            for (var idx = 0; idx < jobs.length; idx++)
+            {
+                var input = document.getElementById("jobno[" + idx + "]");
+                input.value = jobs[idx].jobno;
+                var slider = document.getElementById("job[" + idx + "]");
+                slider.value = jobs[idx].time;
+            }
+            
+            // Set up slider control function
+            var slider = new Array(8);
+            var output = new Array(8);
+            for (var idx=0; idx < 8; idx++)
+            {
+                slider[idx] = document.getElementById("job[" + idx + "]");
+                output[idx] = document.getElementById("hours[" + idx + "]");
+                
+                output[idx].innerHTML = slider[idx].value;
+                slider[idx].oninput = function()
+                {
+                    var index = this.id.substring(4,5);
+                    output[index].innerHTML = this.value;
+                    SaveRecords();
+                }
+            }
 
-			slider.oninput = function() {
-			  output.innerHTML = this.value;
-			}
 		}
 		
 		//!< Set title
@@ -145,6 +236,36 @@
                 }
             }
             return null;
+        }
+        
+        //!< Function to save records
+        function SaveRecords()
+        {
+            var dayIdx;
+            for (dayIdx=0; dayIdx < timeRecordsObj.length; dayIdx++)
+            {
+                if (timeRecordsObj[dayIdx].date == selTimeIso)
+                {
+                    break;
+                }
+            }
+            
+            if (dayIdx < timeRecordsObj.length)
+            {
+                // found the right entry. Assume there are 8 job entries
+                for (var idx = 0; idx < 8; idx++)
+                {
+                    var jobno = document.getElementById("jobno[" + idx + "]");
+                    var slider = document.getElementById("job[" + idx + "]");
+                    
+                    timeRecordsObj[dayIdx].jobs[idx].jobno = jobno.value;
+                    timeRecordsObj[dayIdx].jobs[idx].time = slider.value;
+                }
+                
+                // save back to string and out to localStorage
+                timeRecordsStr = JSON.stringify(timeRecordsObj);
+                localStorage.timeRecords = timeRecordsStr;
+            }
         }
 		
 		
@@ -237,49 +358,49 @@
 	
     <div id="jobs">
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[0]" class="jobnoinput" type="text">
+            <input id="jobno[0]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[0]">
             <span class="hourslabel" id="hours[0]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[1]" class="jobnoinput" type="text">
+            <input id="jobno[1]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[1]">
             <span class="hourslabel" id="hours[1]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[2]" class="jobnoinput" type="text">
+            <input id="jobno[2]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[2]">
             <span class="hourslabel" id="hours[2]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[3]" class="jobnoinput" type="text">
+            <input id="jobno[3]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[3]">
             <span class="hourslabel" id="hours[3]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[4]" class="jobnoinput" type="text">
+            <input id="jobno[4]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[4]">
             <span class="hourslabel" id="hours[4]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[5]" class="jobnoinput" type="text">
+            <input id="jobno[5]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[5]">
             <span class="hourslabel" id="hours[5]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[6]" class="jobnoinput" type="text">
+            <input id="jobno[6]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[6]">
             <span class="hourslabel" id="hours[6]"></span>
         </div>
         
         <div class="jobslider" id="slidecontainer">
-            <input id="jobno[7]" class="jobnoinput" type="text">
+            <input id="jobno[7]" class="jobnoinput" type="text" onChange="SaveRecords()">
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[7]">
             <span class="hourslabel" id="hours[7]"></span>
         </div>
