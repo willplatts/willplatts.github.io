@@ -11,6 +11,7 @@
         var nowYear;
         
         //!< Selected time. Also store date, month, year
+        var timeOffset;
         var selTime;
         var selDate;
         var selMonth;
@@ -28,16 +29,18 @@
             nowYear = nowTime.getFullYear();
             
             // Get selected time
-            var timeOffset = gup('t', null);
             selTime = new Date();
+            
+            timeOffset = gup('t', null);
             if (timeOffset == null)
             {
-                selTime.setTime(nowTime.getTime());
+                timeOffset = 0;
             }
             else
             {
-                selTime.setTime(nowTime.getTime() + parseInt(timeOffset));
+                timeOffset = parseInt(timeOffset);
             }
+            selTime.setTime(nowTime.getTime() + timeOffset);
             selDate = selTime.getDate();
             selMonth = selTime.getMonth();
             selYear = selTime.getFullYear();
