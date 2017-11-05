@@ -13,6 +13,7 @@
         //!< Selected time. Also store date, month, year
         var timeOffset;
         var selTime;
+        var selTimeIso;
         var selDate;
         var selMonth;
         var selYear;
@@ -22,6 +23,7 @@
         //!< Stored data
         var timeRecordsStr;
         var timeRecordsObj;
+        var jobs;
 		
 		//!< Function called when page is loaded
         //!< 1. Get the current time
@@ -29,6 +31,7 @@
         //!< 3. Set forward/back links
         //!< 4. Set title
         //!< 5. Get stored data + parse
+        //!< 6. Get jobs into global
 		function onLoad()
 		{
             // Get current time
@@ -53,6 +56,7 @@
             selDate = selTime.getDate();
             selMonth = selTime.getMonth();
             selYear = selTime.getFullYear();
+            selTimeIso = selTime.toISOString().substring(0,10);
             
             // Set forward/back links
             document.getElementById("backlink").href = "timesheet.html?t=" + (timeOffset - dayToMs);
@@ -68,7 +72,7 @@
             {
                 //Make blank structure
                 timeRecordsObj = [{
-                                    "date": "19700101",
+                                    "date": "1970-01-01",
                                     "jobs": [{
                                         "jobno":"blank",
                                         "time": 0.0
@@ -84,6 +88,8 @@
                 timeRecordsObj = JSON.parse(timeRecordsStr);
             }
             
+            // Get jobs stored for selected day
+            jobs = GetJobs(selTimeIso);
             
 			var slider = document.getElementById("myRange");
 			var output = document.getElementById("demo");
@@ -126,6 +132,19 @@
             var regex = new RegExp( regexS );
             var results = regex.exec( url );
             return results == null ? null : results[1];
+        }
+        
+        //!< Function to get jobs saved on a particular day
+        function GetJobs(day)
+        {
+            for (var idx=0; idx < timeRecordsObj.length; idx++)
+            {
+                if (timeRecordsObj[idx].date == day)
+                {
+                    return timeRecordsObj[idx].jobs;
+                }
+            }
+            return null;
         }
 		
 		
