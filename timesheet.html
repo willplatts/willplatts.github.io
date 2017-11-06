@@ -122,7 +122,8 @@
             jobs = GetJobs(selTimeIso);
             if (jobs == null)
             {
-                timeRecordsObj.push({
+                // if no record for this day, create new blank object
+                var newTimeRecord = {
                                     "date": selTimeIso,
                                     "jobs": [
                                     {
@@ -158,8 +159,20 @@
                                         "time": 0.0
                                     }
                                     ]
-                            }
-                            );
+                            };
+                            
+                // now look through past records and pre-fill the most recently used 6
+                // job numbers
+                var jobNos = FindRecentJobNos();
+                for (var idx = 0; idx < jobNos.length; idx++)
+                {
+                    newTimeRecord.jobs[idx].jobno = jobNos[idx];
+                }
+                
+                // and push onto array
+                timeRecordsObj.push(newTimeRecord);
+                
+                // now re-pull the records into the jobs variable
                 jobs = GetJobs(selTimeIso);
             }
             
@@ -266,6 +279,33 @@
                 timeRecordsStr = JSON.stringify(timeRecordsObj);
                 localStorage.timeRecords = timeRecordsStr;
             }
+        }
+        
+        //!< Find upto 6 most recent job numbers that have been used
+        //!< Assumes timeRecordsObj is valid and finds most recently added
+        //!< This isn't 100% foolproof but probably as good as any other option
+        //!< and good enough for now
+        function FindRecentJobNos()
+        {
+            var jobNos = new Array();
+            var noItems = 0;
+            
+            // Loop backwards through array
+            for (var idx = (timeRecordsObj.length - 1); idx >= 0; idx--)
+            {
+                for (var jdx = 0; jdx < 8; jdx++)
+                {
+                    if (timeRecordsObj[idx].jobs[jdx].time > 0)
+                    {
+                        jobNos.push(timeRecordsObj[idx].jobs[jdx].jobno);
+                        noItems++;
+                    }
+                    if (noItems == 6) break;
+                }
+                if (noItems == 6) break;
+            }
+            
+            return jobNos;
         }
 		
 		
