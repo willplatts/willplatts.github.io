@@ -199,10 +199,26 @@
                     var index = this.id.substring(4,5);
                     output[index].innerHTML = this.value;
                     SaveRecords();
+                    
+                    totalHours();
                 }
             }
+            
+            totalHours();
 
 		}
+        
+        //!< total up hours on job numbers and display
+        function totalHours()
+        {
+            var totHours = 0;
+            
+            for (var idx=0; idx < 8; idx++)
+            {
+                totHours += parseFloat(document.getElementById("hours[" + idx + "]").innerHTML);
+                document.getElementById("tot").innerHTML = totHours.toFixed(1);
+            }
+        }
 		
 		//!< Set title
 		function setTitle()
@@ -375,6 +391,10 @@
 		    cursor: pointer; /* Cursor on hover */
 		}
         
+        #totalbar {
+            font-size: 36px;
+        }
+        
 	</style>
 	
 </head>
@@ -445,6 +465,7 @@
             <span class="hourslabel" id="hours[7]"></span>
         </div>
         
+        <div id="totalbar">Total: <span id="tot"></span></div>
 
     </div>
 	
