@@ -311,7 +311,8 @@
             {
                 for (var jdx = 0; jdx < 8; jdx++)
                 {
-                    if (timeRecordsObj[idx].jobs[jdx].time > 0)
+                    if ((timeRecordsObj[idx].jobs[jdx].time > 0) &&
+                        (jobNos.indexOf(timeRecordsObj[idx].jobs[jdx].jobno)==-1))
                     {
                         jobNos.push(timeRecordsObj[idx].jobs[jdx].jobno);
                         noItems++;
