@@ -117,6 +117,7 @@
             }
             
             var weekJobs = getWeeksJobs();
+            var tot = 0.0;
             
             // Fill in table
             var table = document.getElementById("reporttable");
@@ -136,7 +137,24 @@
                 tr.appendChild(td_job);
                 tr.appendChild(td_time);
                 table.appendChild(tr);
+                
+                tot += weekJobs.times[jobIdx];
             }
+            
+            var tr = document.createElement("tr");
+                
+            var td_job = document.createElement("td");
+            var txt_job = document.createTextNode("**TOT**");
+            td_job.appendChild(txt_job);
+            
+            var td_time = document.createElement("td");
+            var txt_time = document.createTextNode(tot);
+            td_time.appendChild(txt_time);
+            
+            tr.appendChild(td_job);
+            tr.appendChild(td_time);
+            table.appendChild(tr);
+            
             
 
 		}
@@ -217,6 +235,10 @@
 		}
         #links {
             text-align: center;
+            font-size: 30px;
+        }
+        
+        #reporttable {
             font-size: 30px;
         }
         
