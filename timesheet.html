@@ -64,6 +64,9 @@
             document.getElementById("forwardlink").href = "timesheet.html?t=" + (timeOffset + dayToMs);
             document.getElementById("forwardforwardlink").href = "timesheet.html?t=" + (timeOffset + 7*dayToMs);
             
+            // Set time report link
+            document.getElementById("reportlink").href = "timereport.html?t=" + timeOffset;
+            
 			setTitle();
 			
             // Get data
@@ -396,6 +399,10 @@
             font-size: 36px;
         }
         
+        #reportlink {
+            font-size: 36px;
+        }
+        
 	</style>
 	
 </head>
@@ -465,10 +472,12 @@
             <input type="range" min="0.0" max="10.0" value="0.0" step="0.1" class="slider" id="job[7]">
             <span class="hourslabel" id="hours[7]"></span>
         </div>
-        
-        <div id="totalbar">Total: <span id="tot"></span></div>
 
     </div>
+    
+    <div id="totalbar">Total: <span id="tot"></span></div>
+    
+    <div><a id="reportlink" href="timereport.html">Week Report</a></div>
 	
 
 </body>

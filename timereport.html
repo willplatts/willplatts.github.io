@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Time Report</title>
+	
+	<script>
+        //!< The time now. Also store date, month, year
+		var nowTime;
+        var nowDate;
+        var nowMonth;
+        var nowYear;
+        
+        //!< Selected time. Also store date, month, year
+        var timeOffset;
+        var selTime;
+        var selTimeIso;
+        var selDate;
+        var selMonth;
+        var selYear;
+        
+        var dayToMs = (24 * 60 * 60 * 1000);    //!< Day to millisecond convert
+        
+        //!< Stored data
+        var timeRecordsStr;
+        var timeRecordsObj;
+        var jobs;
+		
+		//!< Function called when page is loaded
+        //!< 1. Get the current time
+        //!< 2. Get the selected time
+        //!< 3. Set forward/back links
+        //!< 4. Set title
+        //!< 5. Get stored data + parse
+        //!< 6. Get jobs into global
+		function onLoad()
+		{
+            // Get current time
+			nowTime = new Date();
+            nowDate = nowTime.getDate();
+            nowMonth = nowTime.getMonth();
+            nowYear = nowTime.getFullYear();
+            
+            // Get selected time
+            selTime = new Date();
+            
+            timeOffset = gup('t', null);
+            if (timeOffset == null)
+            {
+                timeOffset = 0;
+            }
+            else
+            {
+                timeOffset = parseInt(timeOffset);
+            }
+            selTime.setTime(nowTime.getTime() + timeOffset);
+            var day = selTime.getDay(),
+                diff = selTime.getDate() - day + (day == 0 ? -6:1);
+            selTime.setDate(diff);
+            selDate = selTime.getDate();
+            selMonth = selTime.getMonth();
+            selYear = selTime.getFullYear();
+            selTimeIso = selTime.toISOString().substring(0,10);
+            
+            // Set forward/back links
+            document.getElementById("backbacklink").href = "timereport.html?t=" + (timeOffset - 7*dayToMs);
+            document.getElementById("forwardforwardlink").href = "timereport.html?t=" + (timeOffset + 7*dayToMs);
+            
+			setTitle();
+			
+            // Get data
+            timeRecordsStr = localStorage.timeRecords;
+            if (timeRecordsStr == null)
+            {
+                //Make blank structure
+                timeRecordsObj = [{
+                                    "date": selTimeIso,
+                                    "jobs": [
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    },
+                                    {
+                                        "jobno":"",
+                                        "time": 0.0
+                                    }
+                                    ]
+                            }];
+            }
+            else
+            {
+                // parse existing data
+                timeRecordsObj = JSON.parse(timeRecordsStr);
+            }
+            
+            var weekJobs = getWeeksJobs();
+            
+            // Fill in table
+            var table = document.getElementById("reporttable");
+            
+            for (var jobIdx = 0; jobIdx < weekJobs.jobs.length; jobIdx++)
+            {
+                var tr = document.createElement("tr");
+                
+                var td_job = document.createElement("td");
+                var txt_job = document.createTextNode(weekJobs.jobs[jobIdx]);
+                td_job.appendChild(txt_job);
+                
+                var td_time = document.createElement("td");
+                var txt_time = document.createTextNode(weekJobs.times[jobIdx]);
+                td_time.appendChild(txt_time);
+                
+                tr.appendChild(td_job);
+                tr.appendChild(td_time);
+                table.appendChild(tr);
+            }
+            
+
+		}
+        
+        //!< Set title
+		function setTitle()
+		{
+            var text = "<strong>Time Report: </strong> ";
+
+            text += "(w/c " + selTime.toDateString() + ")";
+			document.getElementById("title").innerHTML = text;
+		}
+        
+        //!< Function to get parameter from URL
+        function gup( name, url )
+        {
+            if (!url) url = location.href;
+            name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+            var regexS = "[\\?&]"+name+"=([^&#]*)";
+            var regex = new RegExp( regexS );
+            var results = regex.exec( url );
+            return results == null ? null : results[1];
+        }
+    
+        
+        //!< Get week's jobs
+        function getWeeksJobs()
+        {
+            var jobs = Array();
+            var times = Array();
+            
+            // Loop through 7 days
+            for (var dayIdx = 0; dayIdx < 7; dayIdx++)
+            {
+                // Get ISO string dayIdx offset from selTime
+                var date = selTime.getDate() + dayIdx;
+                var offsetDate = new Date(selTime);
+                offsetDate.setDate(date);
+                offsetDateIso = offsetDate.toISOString().substring(0,10);
+                
+                // Look to find any records on this day
+                for (var recordIdx = 0; recordIdx < timeRecordsObj.length; recordIdx++)
+                {
+                    if (timeRecordsObj[recordIdx].date == offsetDateIso)
+                    {
+                        // Go through non-null jobs and add to list
+                        for (var jobIdx = 0; jobIdx < timeRecordsObj[recordIdx].jobs.length; jobIdx++)
+                        {
+                            if (timeRecordsObj[recordIdx].jobs[jobIdx].time != 0)
+                            {
+                                // Add onto existing record or add new record
+                                var index = jobs.indexOf(timeRecordsObj[recordIdx].jobs[jobIdx].jobno);
+                                if (index == -1)
+                                {
+                                    jobs.push(timeRecordsObj[recordIdx].jobs[jobIdx].jobno);
+                                    times.push(parseFloat(timeRecordsObj[recordIdx].jobs[jobIdx].time));
+                                }
+                                else
+                                {
+                                    times[index] += parseFloat(timeRecordsObj[recordIdx].jobs[jobIdx].time);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return {"jobs": jobs, "times": times};
+        }
+
+		
+	</script>
+	
+	<style>
+		#title {
+			font-size: 30px;
+            text-align: center;
+		}
+        #links {
+            text-align: center;
+            font-size: 30px;
+        }
+        
+	</style>
+	
+</head>
+<body onload="onLoad()">
+
+	<div id="title">What are you doing?</div>
+    <div id="links">
+        <span>
+            <a id="backbacklink" href=""><<</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id = "nowlink" href="timereport.html?t=0">-</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id = "forwardforwardlink" href="">>></a>
+        </span>
+    </div>
+    <br /><br />
+	
+    <table border=1 id="reporttable">
+        <tr><th>Job no</th><th>Time</th></tr>
+    </table>
+    
+	
+
+</body>
+</html>
