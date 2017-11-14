@@ -131,7 +131,7 @@
                 td_job.appendChild(txt_job);
                 
                 var td_time = document.createElement("td");
-                var txt_time = document.createTextNode(weekJobs.times[jobIdx]);
+                var txt_time = document.createTextNode(weekJobs.times[jobIdx].toFixed(1));
                 td_time.appendChild(txt_time);
                 
                 tr.appendChild(td_job);
@@ -148,7 +148,7 @@
             td_job.appendChild(txt_job);
             
             var td_time = document.createElement("td");
-            var txt_time = document.createTextNode(tot);
+            var txt_time = document.createTextNode(tot.toFixed(1));
             td_time.appendChild(txt_time);
             
             tr.appendChild(td_job);
