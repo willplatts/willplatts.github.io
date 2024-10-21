@@ -20,6 +20,46 @@
     <body>
         <p id="clicks">Clicks: 0</p>
         <button type="button" onclick="buttonHandle()">Click me</button>
+
+
+        <h1>GPS Coordinates</h1>
+        <button onclick="getLocation()">Get My Location</button>
+        <div id="coords"></div>
+    
+        <script>
+            function getLocation() {
+                const coordsDiv = document.getElementById('coords');
+    
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition, showError);
+                } else {
+                    coordsDiv.innerHTML = "Geolocation is not supported by this browser.";
+                }
+            }
+    
+            function showPosition(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                document.getElementById('coords').innerHTML = `Latitude: ${latitude} <br> Longitude: ${longitude}`;
+            }
+    
+            function showError(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("User denied the request for Geolocation.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is unavailable.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get user location timed out.");
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        alert("An unknown error occurred.");
+                        break;
+                }
+            }
+        </script>
     </body>
 
 </html>
